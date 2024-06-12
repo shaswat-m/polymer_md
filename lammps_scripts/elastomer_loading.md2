@@ -1,0 +1,66 @@
+# Set up logging to log.md file
+#log log.md
+# Set the number of processors for parallel execution
+#processors 4 4 3
+
+# Choose LJ units and specify bond atom style
+units lj
+atom_style bond
+
+# Set up neighbor lists for pairwise interactions
+neighbor 0.36 bin
+neigh_modify delay 2
+
+# Set LJ/Cut pair style with a cutoff of 2.5
+pair_style lj/cut 2.5
+pair_coeff * * 1.0 1.0 2.5
+
+# Set hybrid bond styles (FENE and quartic)
+bond_style hybrid fene quartic
+bond_coeff 1 fene 30.0 1.5 1.0 1.0
+bond_coeff 2 quartic 1200.0 -0.55 0.95 1.3 34.6878
+
+# Set special LJ bonds
+special_bonds lj 1.0 1.0 1.0
+pair_modify shift yes
+
+# Initialize simulation timestep and fix settings
+reset_timestep 0
+fix 1 all langevin 1.0 1.0 0.10 542305
+fix 2 all press/berendsen iso 0.0 0.0 0.10
+fix 3 all nve
+thermo 1000
+thermo_style custom step temp pe etotal epair pxx pyy pzz lx ly lz
+timestep 0.001
+run 10000
+
+# Uncomment the following block to enable breakable polymer chain backbone
+#bond_style quartic
+#bond_coeff * 1200.0 -0.55 0.95 1.3 34.6878
+#############################################################################
+
+# Adjust timestep and run additional steps
+timestep 0.002
+run 10000
+timestep 0.005
+run 10000
+unfix 2
+
+# Deform the system and reset timestep
+fix 4 all deform 1 x erate 0.0001 y volume z volume
+reset_timestep 0
+
+# Compute and store pressure data
+compute p all pressure thermo_temp
+fix 5 all ave/time 4 25 2000 c_p[1] c_p[2] c_p[3] c_p[4] c_p[5] c_p[6] file press.file
+
+# Uncomment the following block to store bonded data for SP calculations
+#compute bb all property/local batom1 batom2 btype
+#compute ff all bond/local fx fy fz 
+#dump nn all local 200000 quartic_data/bond.dump.* c_bb[1] c_bb[2] c_bb[3] 
+#dump ffnn all local 200000 quartic_data/force.dump.* c_ff[1] c_ff[2] c_ff[3] 
+#dump 5 all custom 200000 quartic_data/dump_aba id type x y z ix iy iz
+#############################################################################
+
+# Run the simulation for a total of 20000000 steps
+run 20000000
