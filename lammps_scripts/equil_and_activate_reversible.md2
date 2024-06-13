@@ -22,7 +22,6 @@ fix   3 all nve
 
 thermo     1000
 thermo_style custom step temp pe etotal epair pxx pyy pzz lx ly lz
-fix 5 all ave/time 4 25 100 c_p[1] c_p[2] c_p[3] c_p[4] c_p[5] c_p[6] file press.1
 
 compute p all pressure thermo_temp
 run 500000
