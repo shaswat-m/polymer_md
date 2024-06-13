@@ -77,6 +77,7 @@ mpirun -n 1 $lmp_dir/src/lmp_mpi -in $workdir/lammps_scripts/in.md ;
 ```commandline
 python3 $workdir/python/create_irreversible_bonds.py ;
 ```
+Note, the file I/O might appear rudimentary and can be replaced with the Atomic Simulation Environment (ASE) for ease of usage. Current functions have been retained in their legacy versions.
 * We can now equilibrate the system for a small duration before loading it uniaxially (if that is the desired simulation)
 ```commandline
 mpirun -n 1 $lmp_dir/src/lmp_mpi -in $workdir/lammps_scripts/irreversible_elastomer_loading.md2 ;
