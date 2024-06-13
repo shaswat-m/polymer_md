@@ -1,0 +1,65 @@
+units              lj
+atom_style         full
+neighbor           0.36 bin
+neigh_modify       delay 2
+
+pair_style         lj/cut 2.5
+
+bond_style         fene
+special_bonds    lj  0.0 1.0 1.0
+read_data linear_equal.data
+
+pair_coeff         * * 1.0 1.0 2.5
+
+bond_coeff        * 30.0 1.5 1.0 1.0
+pair_modify        shift yes
+
+timestep        0.010
+reset_timestep 0
+fix   1 all langevin 1.0 1.0 2.0 542305
+fix   2 all press/berendsen iso 0.0 0.0 10.0
+fix   3 all nve
+
+thermo     1000
+thermo_style custom step temp pe etotal epair pxx pyy pzz lx ly lz
+fix 5 all ave/time 4 25 100 c_p[1] c_p[2] c_p[3] c_p[4] c_p[5] c_p[6] file press.1
+
+compute p all pressure thermo_temp
+run 500000
+write_data  npt_wo_activation.data
+
+
+variable ljstep equal 10
+variable crstep equal 7
+variable eps2 equal 0.33
+variable eps3 equal 0.2
+variable eps23 equal 15
+variable sig2 equal 2.6
+variable sig3 equal 2.1
+variable sig23 equal 0.86
+variable diff2 equal (${sig2}-1)/${ljstep}
+variable diff3 equal (${sig3}-1)/${ljstep}
+variable diff23 equal ${eps23}/${crstep}
+
+label loopa
+variable a loop ${ljstep}
+variable s2 equal 1+${diff2}*$a
+variable s3 equal 1+${diff3}*$a
+variable rc2 equal 1.08*${s2}
+variable rc3 equal 1.08*${s3}
+pair_coeff         2 2 ${eps2} ${s2} ${rc2}
+pair_coeff         3 3 ${eps3} ${s3} ${rc3}
+run 100000
+next a
+jump SELF loopa
+label break
+
+label loopb
+variable b loop ${crstep}
+variable e23 equal ${diff23}*$b
+pair_coeff         2 3 ${e23} ${sig23} 2.5
+run 100000
+next b
+jump SELF loopb
+label break
+write_data polymer_reversible.data
