@@ -341,3 +341,41 @@ def uniform_spacing_indices(cand_bonds, n_bonds, n_bead):
             rej.extend(np.intersect1d(acc,rejs))
 
     return selected_ind
+
+def pbc(drij, h, hinv=None):
+    '''calculate distance vector between i and j
+    
+        Considering periodic boundary conditions (PBC)
+    
+        Parameters
+        ----------
+        drij : float, dimension (npairs, 3)
+            distance vectors of atom pairs (Angstrom)
+        h : float, dimension (3, 3)
+            Periodic box size h = (c1|c2|c3)
+        hinv : optional, float, dimension (3, 3)
+            inverse matrix of h, if None, it will be calculated
+
+        Returns
+        -------
+        drij : float, dimension (npairs, 3)
+            modified distance vectors of atom pairs considering PBC (Angstrom)
+            
+    '''
+    # Check the input
+    if len(drij.shape) == 1:         # Only one pair
+        drij = drij.reshape(1, -1)
+    if (len(drij.shape) != 2):
+        raise ValueError('pbc: drij shape not correct, must be (npairs, nd), (nd = 2,3)')
+    npairs, nd = drij.shape 
+    if len(h.shape) != 2 or h.shape[0] != h.shape[1] or nd != h.shape[0]:
+        raise ValueError('pbc: h matrix shape not consistent with drij')
+    # Calculate inverse matrix of h
+    if hinv is None:
+        hinv = np.linalg.inv(h)
+
+    dsij = np.dot(hinv, drij.T).T
+    dsij = dsij - np.round(dsij)
+    drij = np.dot(h, dsij.T).T
+    
+    return drij
