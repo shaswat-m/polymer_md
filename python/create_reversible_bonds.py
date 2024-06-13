@@ -1,7 +1,7 @@
 
 import sys, os
 import numpy as np
-import re, random
+import re, random, argparse
 ######## INPUT PARSER ########
 parser = argparse.ArgumentParser(description="Process some integers.")
 
@@ -31,7 +31,7 @@ outfile = args.outfile
 
 # n_id is a bookkeeping variable
 if n_id == 1:
-	add_atom_id, add_line, rm_bonds = 0, 0, 0
+	add_atom_id, at_start, pos_start, rm_bonds = 0, 2, 11, 0
 else:
 	add_atom_id, add_line, rm_bonds = 2, 4, 2
 
@@ -48,7 +48,7 @@ if args.verbose:
 	
 
 fid=open(infile,'r')
-for i in range(2):
+for i in range(at_start):
     li=fid.readline()
 li=fid.readline()
 a=re.findall("[+-]? *(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", li.strip())
@@ -72,7 +72,7 @@ box_y=np.array(a,dtype=float)
 li=fid.readline()
 a=re.findall("[+-]? *(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", li.strip())
 box_z=np.array(a,dtype=float)
-for i in range(11+add_line):
+for i in range(pos_start):
     li=fid.readline()
     
 DATA_ATOMs = np.zeros((int(Atoms),9)) if n_id ==1 else np.zeros((int(Atoms),10))
