@@ -42,6 +42,8 @@ export rundir=$workdir/runs/test_run ;
 mkdir $rundir ; 
 cd $rundir ;
 
+echo "Move the polymer.dat data file generate by LAMMPS chain tool for the remaining lines to execute successfully"
+
 mpirun -n 96 $lmp_dir/src/lmp_mpi -in $workdir/lammps_scripts/in.md ;
 
 python3 $workdir/python/create_irreversible_bonds.py --n_chain $n_chain --n_bead $n_bead --n_quartic $n_irrev ;
