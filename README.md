@@ -23,7 +23,51 @@ Helper scripts to create an equilibrated polymer melt to which irreversible or r
   journal={arXiv preprint arXiv:2401.11087},
   year={2024}
 }
+```
 
+## Preparing the polymer network
+Set work directory
+```commandline
+export workdir=$(pwd)
+```
+### Install LAMMPS
+Here are the steps to follow:
+* Clone the `release` version of LAMMPS from GitHub
+* Install the necessary packages for CGMD simulations: `MANBODY`, `MOLECULE`, `MC`, and `DPD-BASIC`
+```commandline
+git clone -b release https://github.com/lammps/lammps.git mylammps ;
+cd mylammps/src ;
+make yes-manybody ;
+make yes-molecule ;
+make yes-mc ; 
+make yes-dpd-basic
+make mpi ;
+```
+* Add the cloned repository to the `lmp_dir` environment variable.
+```commandline
+export lmp_dir=$workdir/mylammps
+```
+* Setup runs directory
+```commandline
+export rundir=$workdir/runs/test_run ;
+mkdir $rundir ; 
+```
+
+## Create initial configuration
+
+* Use the LAMMPS `chain` tool to create the initial configuration. Edit the `$lmp_dir/tools/def.chain` to choose the number of polymer chains (`number of chains`) and the length (degree of polymerization - `monomers/chain`) of the polymer chains before executing the following cell to create the `chain` executable.
+```commandline
+cd $lmp_dir/tools ;
+gfortran -o chain chain.f90  ;
+```
+* Run the `chain` executable to generate the initial input configuration.
+```commandline
+cd $rundir ;
+$lmp_dir/tools/chain < $lmp_dir/tools/def.chain > polymer.dat ;
+```
+* Run the lammps script `in.md` to create an equilibrated polymer melt
+```commandline
+mpirun -n 1 $lmp_dir/src/lmp_mpi -in $workdir/lammps_scripts/in.md ;
 ```
 
 ## Authors and acknowledgment
