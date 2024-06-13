@@ -1,0 +1,44 @@
+units              lj
+atom_style         full
+neighbor           0.36 bin
+neigh_modify       delay 200
+
+pair_style         lj/cut 2.5
+
+bond_style         fene
+special_bonds    lj  0.0 1.0 1.0
+read_data polymer_reversible.data 
+
+pair_coeff         * * 1.0 1.0 2.5
+pair_coeff         2 3 15.0 1.0 2.5
+
+pair_coeff         2 2 0.7 2.6 2.9184
+pair_coeff         3 3 0.7 2.1 2.3572
+
+bond_coeff        * 30.0 1.5 1.0 1.0
+pair_modify        shift yes
+
+timestep        0.001
+reset_timestep 0
+fix   1 all langevin 1.0 1.0 0.20 542305
+fix   2 all press/berendsen iso 0.0 0.0 0.10
+fix   3 all nve
+
+thermo     100000
+thermo_style custom step temp pe etotal epair pxx pyy pzz lx ly lz
+compute p all pressure thermo_temp
+run 100000000
+
+unfix 2
+fix 4 all deform 1 x erate 0.0002 y volume z volume
+# Save the time-averaged stress during loading 
+fix 5 all ave/time 4 25 5000 c_p[1] c_p[2] c_p[3] c_p[4] c_p[5] c_p[6] file press.reversible_loading
+
+# Uncomment the following block to store bonded data for SP calculations
+# group crosslinker type 2 3
+# compute clusb crosslinker cluster/atom 1.15
+# dump    4 crosslinker custom 50000 cluster_2x id c_clusb
+# dump    5 crosslinker custom 50000 dump_aba_2x id type x y z ix iy iz
+
+run 20000000
+write_data loaded_reversible_network.data
