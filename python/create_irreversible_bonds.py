@@ -34,7 +34,7 @@ outfile = args.outfile
 
 # Set other variables based on the system_type
 if system_type == 'bonded':
-    at_start, pos_start, ncs, frc = 2, 16, 9, 1.25
+    at_start, pos_start, ncs, frc = 2, 11, 9, 1.25
     angular = False
 else:
     at_start, pos_start, ncs, frc = 1, 8, 6, 2000
