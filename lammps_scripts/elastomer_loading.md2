@@ -6,6 +6,7 @@
 # Choose LJ units and specify bond atom style
 units lj
 atom_style bond
+read_data polymer_irreversible.data 
 
 # Set up neighbor lists for pairwise interactions
 neighbor 0.36 bin
