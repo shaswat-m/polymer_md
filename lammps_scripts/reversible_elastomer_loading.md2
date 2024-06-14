@@ -27,7 +27,7 @@ fix   3 all nve
 thermo     100000
 thermo_style custom step temp pe etotal epair pxx pyy pzz lx ly lz
 compute p all pressure thermo_temp
-run 100000000
+run 10000000
 
 unfix 2
 fix 4 all deform 1 x erate 0.0002 y volume z volume
@@ -40,5 +40,5 @@ fix 5 all ave/time 4 25 5000 c_p[1] c_p[2] c_p[3] c_p[4] c_p[5] c_p[6] file pres
 # dump    4 crosslinker custom 50000 cluster_2x id c_clusb
 # dump    5 crosslinker custom 50000 dump_aba_2x id type x y z ix iy iz
 
-run 20000000
+run 5000000
 write_data loaded_reversible_network.data

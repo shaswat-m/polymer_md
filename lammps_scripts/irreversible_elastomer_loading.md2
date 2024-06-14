@@ -58,6 +58,6 @@ fix 5 all ave/time 4 25 2000 c_p[1] c_p[2] c_p[3] c_p[4] c_p[5] c_p[6] file pres
 # dump 5 all custom 200000 quartic_data/dump_aba id type x y z ix iy iz
 #############################################################################
 
-# Run the simulation for a total of 20000000 steps
-run 20000000
+# Run the simulation for a total of 2000000 steps 
+run 2000000
 write_data loaded_irreversible_network.data
