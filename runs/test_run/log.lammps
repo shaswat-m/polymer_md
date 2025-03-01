@@ -1,0 +1,144 @@
+LAMMPS (8 Apr 2021)
+units              lj
+atom_style         full
+neighbor           0.36 bin
+neigh_modify       delay 200
+
+pair_style         lj/cut 2.5
+
+bond_style         fene
+special_bonds    lj  0.0 1.0 1.0
+read_data polymer_reversible.data
+Reading data file ...
+  orthogonal box = (-6.5896366 -6.5896366 -6.5896366) to (6.5896366 6.5896366 6.5896366)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  2000 atoms
+  reading velocities ...
+  2000 velocities
+  scanning bonds ...
+  1 = max bonds/atom
+  reading bonds ...
+  1881 bonds
+Finding 1-2 1-3 1-4 neighbors ...
+  special bond factors lj:    0        1        1       
+  special bond factors coul:  0        0        0       
+     2 = max # of 1-2 neighbors
+     2 = max # of 1-3 neighbors
+     4 = max # of 1-4 neighbors
+     6 = max # of special neighbors
+  special bonds CPU = 0.001 seconds
+  read_data CPU = 0.012 seconds
+
+pair_coeff         * * 1.0 1.0 2.5
+pair_coeff         2 3 15.0 1.0 2.5
+
+pair_coeff         2 2 0.7 2.6 2.9184
+pair_coeff         3 3 0.7 2.1 2.3572
+
+bond_coeff        * 30.0 1.5 1.0 1.0
+pair_modify        shift yes
+
+timestep        0.001
+reset_timestep 0
+fix   1 all langevin 1.0 1.0 0.20 542305
+fix   2 all press/berendsen iso 0.0 0.0 0.10
+fix   3 all nve
+
+thermo     100000
+thermo_style custom step temp pe etotal epair pxx pyy pzz lx ly lz
+compute p all pressure thermo_temp
+run 10000
+Neighbor list info ...
+  update every 1 steps, delay 200 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 3.2784
+  ghost atom cutoff = 3.2784
+  binsize = 1.6392, bins = 9 9 9
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair lj/cut, perpetual
+      attributes: half, newton on
+      pair build: half/bin/newton
+      stencil: half/bin/3d/newton
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 6.711 | 6.711 | 6.711 Mbytes
+Step Temp PotEng TotEng E_pair Pxx Pyy Pzz Lx Ly Lz 
+       0    1.0262936    16.566127    18.104798   -2.9056772    17.169531    15.398614    16.040913    13.179273    13.179273    13.179273 
+   10000   0.99636871    13.930726    15.424532   -5.5345821   0.11822447 -0.0058013978 -0.026582791    13.278711    13.278711    13.278711 
+Loop time of 9.32792 on 1 procs for 10000 steps with 2000 atoms
+
+Performance: 92625.121 tau/day, 1072.050 timesteps/s
+98.5% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 8.2034     | 8.2034     | 8.2034     |   0.0 | 87.94
+Bond    | 0.28957    | 0.28957    | 0.28957    |   0.0 |  3.10
+Neigh   | 0.16048    | 0.16048    | 0.16048    |   0.0 |  1.72
+Comm    | 0.15122    | 0.15122    | 0.15122    |   0.0 |  1.62
+Output  | 4.1e-05    | 4.1e-05    | 4.1e-05    |   0.0 |  0.00
+Modify  | 0.4936     | 0.4936     | 0.4936     |   0.0 |  5.29
+Other   |            | 0.0296     |            |       |  0.32
+
+Nlocal:        2000.00 ave        2000 max        2000 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:        4737.00 ave        4737 max        4737 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:        80716.0 ave       80716 max       80716 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 80716
+Ave neighs/atom = 40.358000
+Ave special neighs/atom = 5.5860000
+Neighbor list builds = 50
+Dangerous builds = 50
+
+unfix 2
+fix 4 all deform 1 x erate 0.0002 y volume z volume
+# Save the time-averaged stress during loading
+fix 5 all ave/time 4 25 100 c_p[1] c_p[2] c_p[3] c_p[4] c_p[5] c_p[6] file press.reversible_loading
+
+# Uncomment the following block to store bonded data for SP calculations
+# group crosslinker type 2 3
+# compute clusb crosslinker cluster/atom 1.15
+# dump    4 crosslinker custom 50000 cluster_2x id c_clusb
+# dump    5 crosslinker custom 50000 dump_aba_2x id type x y z ix iy iz
+
+run 20000
+Per MPI rank memory allocation (min/avg/max) = 6.747 | 6.747 | 6.747 Mbytes
+Step Temp PotEng TotEng E_pair Pxx Pyy Pzz Lx Ly Lz 
+   10000   0.99636871    13.930754     15.42456    -5.534549   0.11486682 -0.0091625235 -0.029942949    13.278711    13.278711    13.278711 
+   30000     1.001377     13.93225    15.433564   -5.5524646  -0.28079535  -0.16654759  -0.49995655    13.331826    13.252233    13.252233 
+Loop time of 18.2814 on 1 procs for 20000 steps with 2000 atoms
+
+Performance: 94522.436 tau/day, 1094.010 timesteps/s
+99.3% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 15.983     | 15.983     | 15.983     |   0.0 | 87.43
+Bond    | 0.4871     | 0.4871     | 0.4871     |   0.0 |  2.66
+Neigh   | 0.32467    | 0.32467    | 0.32467    |   0.0 |  1.78
+Comm    | 0.31929    | 0.31929    | 0.31929    |   0.0 |  1.75
+Output  | 2.5e-05    | 2.5e-05    | 2.5e-05    |   0.0 |  0.00
+Modify  | 1.1033     | 1.1033     | 1.1033     |   0.0 |  6.04
+Other   |            | 0.06361    |            |       |  0.35
+
+Nlocal:        2000.00 ave        2000 max        2000 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:        4690.00 ave        4690 max        4690 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:        80681.0 ave       80681 max       80681 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 80681
+Ave neighs/atom = 40.340500
+Ave special neighs/atom = 5.5860000
+Neighbor list builds = 100
+Dangerous builds = 100
+write_data loaded_reversible_network.data
+System init for write_data ...
+WARNING: Not all mixed pair coeffs generated from mixing. Use write_data with 'pair ij' option to store all pair coeffs. (../write_data.cpp:312)
+Total wall time: 0:00:27
