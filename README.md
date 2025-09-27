@@ -25,6 +25,27 @@ Helper scripts to create an equilibrated polymer melt to which irreversible or r
 }
 ```
 
+The scripts in this repository have been developed for the completion of the Ph.D. disertation of:
+* Yikai Yin - Elastomers for stretchable electronics : from molecular structure to mechanical properties (https://searchworks.stanford.edu/view/13680898)
+```
+@book{yin2020elastomers,
+  title={Elastomers for Stretchable Electronics: From Molecular Structure to Mechanical Properties},
+  author={Yin, Yikai},
+  year={2020},
+  publisher={Stanford University}
+}
+```
+
+* Shaswat Mohanty - Understanding the Microstructural and Macroscopic Evolution of Dynamic Polymer Networks through Coarse-Grained Molecular Dynamics (https://searchworks.stanford.edu/view/in00000071344)
+```
+@book{mohanty2024understanding,
+  title={Understanding the Microstructural and Macroscopic Evolution of Dynamic Polymer Networks Through Coarse-grained Molecular Dynamics},
+  author={Mohanty, Shaswat},
+  year={2024},
+  publisher={Stanford University}
+}
+```
+
 ## Preparing the polymer network
 Set work directory
 ```commandline
